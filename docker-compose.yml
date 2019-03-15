@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  aqi:
+    build: .
+    image: aqicache
+    restart: always
+    volumes:
+     - ./config.cfg:/app/config.cfg
