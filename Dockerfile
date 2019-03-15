@@ -6,6 +6,7 @@ RUN apk add --update --no-cache mariadb-client-libs \
     musl-dev \
     && pip install mysqlclient==1.4.2.post1 \
     && apk del .build-deps
+RUN apk add tzdata
 FROM dcbuilder
 COPY . /app
 WORKDIR /app

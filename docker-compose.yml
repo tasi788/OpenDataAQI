@@ -6,4 +6,6 @@ services:
     image: aqicache
     restart: always
     volumes:
-     - ./config.cfg:/app/config.cfg
+      - ./config.cfg:/app/config.cfg
+    environment:
+      TZ: Asia/Taipei

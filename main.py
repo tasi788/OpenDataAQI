@@ -62,7 +62,7 @@ class runner:
                 table.insert_many(clean(rec))
                 logging.info('Run...')
             except Exception as e:
-                logging.warning('error')
+                logging.info('error')
                 logging.exception(e)
 
 
@@ -70,4 +70,4 @@ tester = runner()
 
 while True:
     tester.fetch()
-    time.sleep(600)
+    time.sleep(180)
