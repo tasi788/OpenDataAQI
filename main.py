@@ -24,6 +24,7 @@ elif log_level == 'debug':
     logging_level = logging.DEBUG
 
 logging.basicConfig(format=logging_format, level=logging.INFO)
+requests.packages.urllib3.disable_warnings()
 
 
 class runner:
@@ -59,8 +60,15 @@ class runner:
             logging.info('Passed')
         else:
             try:
-                table.insert_many(clean(rec))
-                logging.info('Run...')
+                trigger = 0
+                for check_date in rec:
+                    # 2019-03-18 08:00:00
+                    if check_date['PublishTime'] == now.strftime('%Y-%m-%d %H:00:00'):
+                        trigger = 1
+                        break
+                if trigger:
+                    table.insert_many(clean(rec))
+                    logging.info('Run...')
             except Exception as e:
                 logging.info('error')
                 logging.exception(e)
