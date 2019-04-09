@@ -41,11 +41,11 @@ class runner:
                 self.record(req.json())
 
     def record(self, rec):
-        db = dataset.connect(config.get('db', 'url')))
-        table=db['OpenDataAir']
+        db = dataset.connect(config.get('db', 'url'))
+        table = db['OpenDataAir']
 
         def clean(data_):
-            tmp=[]
+            tmp = []
             for data in data_:
                 data.update(
                     {'PM25': data['PM2.5'], 'PM25_AVG': data['PM2.5_AVG']})
@@ -54,13 +54,13 @@ class runner:
                 tmp.append(data)
             return tmp
 
-        now=datetime.now()
+        now = datetime.now()
         # result = table.find_one(PublishTime=datetime(now.year, now.month, now.day, now.hour))
         for post in clean(rec):
             if post['PublishTime'] == now.strftime('%Y-%m-%d %H:00'):
                 try:
-                    result=table.find_one(
-                        SiteName = post['SiteName'], PublishTime = now.strftime('%Y-%m-%d %H:00'))
+                    result = table.find_one(
+                        SiteName=post['SiteName'], PublishTime=now.strftime('%Y-%m-%d %H:00'))
                 except Exception as e:
                     raise
                     logging.critical('QueryDatabase Error')
@@ -76,7 +76,7 @@ class runner:
                             logging.exception(e)
 
 
-tester=runner()
+tester = runner()
 
 while True:
     tester.fetch()
