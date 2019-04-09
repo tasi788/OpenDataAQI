@@ -1,3 +1,4 @@
+import dateutil.parser
 import time
 import logging
 from datetime import datetime
@@ -40,11 +41,11 @@ class runner:
                 self.record(req.json())
 
     def record(self, rec):
-        db = dataset.connect(config.get('db', 'url'))
-        table = db['epa_open_air_data']
+        db = dataset.connect(config.get('db', 'url')))
+        table=db['OpenDataAir']
 
         def clean(data_):
-            tmp = []
+            tmp=[]
             for data in data_:
                 data.update(
                     {'PM25': data['PM2.5'], 'PM25_AVG': data['PM2.5_AVG']})
@@ -53,28 +54,29 @@ class runner:
                 tmp.append(data)
             return tmp
 
-        now = datetime.now()
-        result = table.find_one(PublishTime=datetime(
-            now.year, now.month, now.day, now.hour))
-        if result:
-            logging.info('Passed')
-        else:
-            try:
-                trigger = 0
-                for check_date in rec:
-                    # 2019-03-18 08:00:00
-                    if check_date['PublishTime'] == now.strftime('%Y-%m-%d %H:00:00'):
-                        trigger = 1
-                        break
-                if trigger:
-                    table.insert_many(clean(rec))
-                    logging.info('Run...')
-            except Exception as e:
-                logging.info('error')
-                logging.exception(e)
+        now=datetime.now()
+        # result = table.find_one(PublishTime=datetime(now.year, now.month, now.day, now.hour))
+        for post in clean(rec):
+            if post['PublishTime'] == now.strftime('%Y-%m-%d %H:00'):
+                try:
+                    result=table.find_one(
+                        SiteName = post['SiteName'], PublishTime = now.strftime('%Y-%m-%d %H:00'))
+                except Exception as e:
+                    raise
+                    logging.critical('QueryDatabase Error')
+                else:
+                    if result:
+                        logging.info('Pass...')
+                    else:
+                        try:
+                            table.insert(post)
+                            logging.info('Run...')
+                        except Exception as e:
+                            logging.info('error')
+                            logging.exception(e)
 
 
-tester = runner()
+tester=runner()
 
 while True:
     tester.fetch()
